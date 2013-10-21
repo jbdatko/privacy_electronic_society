@@ -1,0 +1,247 @@
+%File: focus_paper.tex
+\documentclass[letterpaper]{article}
+
+
+% Required Packages
+\usepackage{aaai}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{graphicx}
+\usepackage{url}
+
+
+\begin{document}
+
+%%%%%%%%%%
+% Pdfinfo for PDFTEX
+% Uncomment and complete the following for metadata if % your paper is
+% typeset using PDFTEX
+\pdfinfo{
+/Title (The Feasibility of Stylometry as a Service)
+/Author (Josh Datko and Joseph Heenan)
+/Subject (The Feasibility of Stylometry as a Service)
+/Keywords (privacy anonymity stylometry )
+}
+%%%%%%%%%%
+% Section Numbers
+% Uncomment if you want to use section numbers
+% and change the 0 to a 1 or 2
+\setcounter{secnumdepth}{1}
+%%%%%%%%%%
+% Title, Author, and Address Information
+\title{The Feasibility of Stylometry as a Service}
+\author{Josh Datko \and Joseph Heenan\\ Drexel University\\
+CS680: Privacy in the Electronic Society\\
+}
+%%%%%%%%%%
+% Body of Paper Begins \begin{document}
+\maketitle
+
+\section*{Motivation}\label{sec:motivation}
+
+
+Maintaining anonymity online is increasingly difficult.  While
+networks like Tor \cite{Dingledine04tor:the} will protect an Internet
+Protocol (IP) address at the network layer, it does not protect the
+content delivered over Tor.  For example, suppose an author desires to
+provide controversial political commentary but wants to remain
+anonymous.  In this case, she can protect her IP address with Tor and
+use end-to-end encryption to protect her message en-route, but she
+could be discovered through stylometry.
+
+Stylometry, a form of authorship recognition, has been found to be
+extremely effective especially even at
+Internet-scale \cite{Narayanan:2012:FIA:2310656.2310687}.  Thus for
+those seeking to publish anonymous writings, not only can the delivery
+path reveal them, but their content can as well.  Adversarial
+stylometry is the active process of manipulating writing to confuse
+the identity of the author.  A set of tools, JStylo and
+Anonymouth \cite{conf/pet/McDonaldACSG12}, have been produced by the
+Privacy, Security, and Automation Lab (PSAL) at Drexel University to
+assist authors in anonymize their writing.
+
+Currently the JStylo and Anonymouth integrated open-source project
+(JSAN) is available to download and can be installed on a machine that
+runs the Java Virtual Machine (JVM).  While JSAN has been successfully
+demonstrated to be effective in assisting authors with adversarial
+stylometry \cite{journals/tissec/BrennanAG12}, the constraint of
+downloading and installing the software on a machine powerful enough
+to run machine learning algorithms on data sets, limits their
+adoptability.  We propose increase the availability and usability of
+JStylo and Anonymouth by offering them as a web service.
+
+Migrating to a web service would provide JSAN with several benefits.
+This web service would provide adversarial stylometry capabilities to
+embedded devices like tablets or smart-phones which otherwise could
+not run the software natively.  Since there would be no installation,
+besides a typical web-browser, a web-service would be better suited
+for time-critical situations where an author must quickly anonymize
+her document.  Lastly, we believe that a stylometric service could
+increase anonymity.
+
+An effective technique in adversarial stylometry is imitation of
+another author's writing style.  However, since many are not trained
+author imitators, this technique requires significant cognitive effort.
+Perhaps a more effective technique, would be to have multiple authors
+re-write the target work in their natural style.  This would be
+difficult to accomplish with standalone software, but with a web
+service with multiple users, this is feasible.
+
+
+
+\section*{Approach}\label{sec:approach}
+
+We propose to build a stylometric service around JStylo and
+Anonymouth.  However, this project is more than just porting JSAN to
+the web.  With a migration to a web service from locally running
+software, the anonymity attack vector changes significantly.  We
+intend to design and evaluate privacy enhancing techniques for
+a stylometric web service.
+
+\subsection{Design}
+
+Our design goal is to increase both the anonymity and availability of
+JSAN through this service.  In order to increase the anonymity, we
+will need to protect the service from traffic analysis, which we
+intend to do by running a Tor hidden service.  To improve the
+anonymity and effectiveness of JSAN, we intend to incorporate a
+third-party re-writer and in the future, a document mixer.  The
+document mixer will randomize the target document, potentially with
+other target documents, and present a re-writer the mixed document.
+The re-writer will be able to use the Anonymouth-like interface to
+anonymize the document without being able to infer the author.  Also,
+the mixing will help obfuscate the contents of the document as well.
+However, for this initial attempt, we will focus on the third-party
+anonymization service.
+
+Although in this initial effort we do not intent to conduct usability
+testing, we will consider incentive options for re-writers.  Like
+other anonymity networks, we believe that anonymity is improved with a
+diverse user base.  The challenge is building the user base.  While we
+do not intend to conduct user testing for this initial effort, we will
+consider various incentive options like actual payment to
+gamification.
+
+\subsection{Implementation}
+
+Our initial idea is to host this service on Amazon Web Services
+(AWS).  For the user interface, we are planning to implement the front
+end in AngularJS.  Since the existing code is Java, migrating to the
+Play Framework seems like a natural progression.  The text editor
+functionality will be converted to Firepad, an open source
+collaborative editor.  While real-time collaboration is not
+necessarily needed, we think that an ``Anonymouth'' user, an
+Artificial Agent, would assist the re-writer in edits.
+
+
+\section*{Related Work}\label{sec:related}
+This proposal extends the work from Drexel's PSAL, who have made
+several contributions in this field.  In
+\cite{conf/pet/McDonaldACSG12}, the authors present the Anonymouth
+framework for anonymizing writing.
+\cite{Afroz:2012:DHF:2310656.2310711} confirmed adversarial stylometry
+is very effective at obfuscated authorship, but also presented
+techniques to hide the prescience adversarial stylometry.  Lastly,
+\cite{journals/tissec/BrennanAG12} presented successful adversarial
+stylometry techniques through obfuscation, imitation, and translation
+and produced two corpora of texts.
+
+Tor is one of the most successful anonymity services in
+operation \cite{Dingledine04tor:the}.  We intend to protect the
+anonymity of users by offering JSAN over a Tor hidden service
+however, there has been recent research de-anonymizing popular hidden
+services \cite{oakland2013-trawling}.  We will provide a discussion on
+the design and experience of enabling a hidden service, but we will
+focus on this aspect.
+
+\subsection{Novelty}\label{sec:novelty}
+
+There are two significant contributions as a result of this work.  The
+first is a stylometric web service.  This will advance the usability
+and capabilities of JSAN and provide a framework for more expansive
+user testing in the future.  The second contribution is that this is
+the first framework for multi-author adversarial stylometry.  While
+single author stylometry has been recently studied, multi-author
+documents have not received significant attention.
+
+\section*{Evaluation}\label{sec:evaluation}
+This effort is intended to produce several artifacts.  The first is an
+evaluation of the privacy architecture of a cloud web service.  Here
+we intend to describe the challenges and present and evaluate a
+privacy-by-architecture system.  Second, we will provide a survey on
+various incentive approaches and suggest a possible method.  Lastly,
+we will provide a prototype web service and evaluate it.  Specifically
+we will compare the web service to the standalone tools and evaluate
+it for accuracy and usability.  Additionally, we will experiment with
+the third party anonymization by re-writing each other's writing
+samples.  We will provide an evaluation on the perceived difficultly
+of re-writing one's own work to that in the mixed system.
+
+
+\section*{Milestones}\label{sec:milestones}
+
+Table \ref{tab:milestones} contains a proposed timeline for completing
+this project.  This work will be split among two developers and there
+are several modules that can be independently developed.  In order to
+re-architect JSAN, we first need to become familiar with the existing
+software.  While this software will be running as a service, we do not
+intend to release it to the general public in this time-frame.  We
+will conduct the evaluation with perhaps a very limited subset of
+other students.
+
+
+\begin{table}
+  \centering
+  \begin{tabular}{l | c}
+    Milestone & Date\\
+    \hline
+
+    Document initial design & October 28\\
+    Finish porting JSAN to a web service & November 4\\
+    Add the Firebase editro & November 11\\
+    Add the third party feature & November 18\\
+    Conduct evaluation & November 25\\
+    Provide Paper and Presentation & December 2
+
+  \end{tabular}
+  \caption{Project Milestones}
+  \label{tab:milestones}
+\end{table}
+
+
+\subsection*{Future Work}
+
+The scope of this project is designed to completed in one Drexel
+quarter, however we have several ideas for continued work.  With a web
+service, we can offer real-time adversarial stylometry.  Assume Alice,
+who has a blog, wants to anonymize her next blog post.  She would
+connect to our web service, submit the URL for her blog and then write
+her next post with adversarial stylometry.  This real-time data
+crawling at this scale is simply not feasible with stand alone
+software.
+
+Now that a third party will be re-writing documents, we feel that it
+is important to obfuscate the content from the re-writer.  One idea,
+is to mix the document, perhaps with other documents, prior to
+re-writing.  The re-writer would be presented with an otherwise
+nonsensical document and would focus on re-write each sentence in her
+native style.  The combined document, would contain $n$ author styles,
+where $n$ is the number of re-writing authors.
+
+Lastly, for long term adversarial projects, we are curious on how often
+one has to re-train the model.  We imagine that a web service could
+help monitor the change of a stylometric fingerprint over time.
+
+
+%%%%%%%%%%
+% References and End of Paper
+\bibliography{service}
+\bibliographystyle{aaai}
+
+
+\end{document}
+%%% Local Variables
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
