@@ -38,7 +38,7 @@ CS680: Privacy in the Electronic Society\\
 % Body of Paper Begins \begin{document}
 \maketitle
 
-\section*{Motivation}\label{sec:motivation}
+\section*{Introduction}\label{sec:intro}
 
 
 Maintaining anonymity online is increasingly difficult.  While
@@ -77,16 +77,47 @@ embedded devices like tablets or smart-phones which otherwise could
 not run the software natively.  Since there would be no installation,
 besides a typical web-browser, a web-service would be better suited
 for time-critical situations where an author must quickly anonymize
-her document.  Lastly, we believe that a stylometric service could
-increase anonymity.
+her document.
+
+An example use-case is an author with a time sensitive document that
+she needs to release.  Because of the sensitive nature, she wishes to
+apply adversarial stylometry to her document.  In this case, a
+computer with decent enough performance to natively run machine
+learning techniques may not be available.  However, a web service is
+nearly ubiquitous.
+
+\subsection{Expanding Stylometric Research}
+
+A stylometric web service also expands research opportunities.  This
+service, offered through a modern architecture, would allow
+researchers to easily perform experiments.  An easily accessible tool
+allows for rapid verification of research results and greater
+community engagement.
+
+In addition to convenient access, a web service can provide additional
+diversity in stylometric experimentation.  For example, this web
+service supports multiple authors and provides a better tool for
+real-time, multiple author stylometry than a stand-alone application.
 
 An effective technique in adversarial stylometry is imitation of
 another author's writing style.  However, since many are not trained
 author imitators, this technique requires significant cognitive effort.
 Perhaps a more effective technique, would be to have multiple authors
-re-write the target work in their natural style.  This would be
-difficult to accomplish with standalone software, but with a web
-service with multiple users, this is feasible.
+re-write the target work in their natural style.  While there has been
+numerous studies into single author stylometric analysis, multiple
+authorship is more difficult.  This web services provides a platform
+for multiple authorship research.
+
+\subsection{Challenges in a Web Service}
+
+A privacy enhancing technology that is designed to exist as a web
+service faces different challenges than an application.  Attack
+vectors open up on the service from active denial-of-service attacks
+to passive sniffing.  A privacy web service must take great care to
+ensure that service does not compromise its user's privacy.  In
+Section \ref{sec:design} we provide our architecture and analysis the
+security and privacy.
+
 
 
 
