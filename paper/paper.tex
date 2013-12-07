@@ -122,6 +122,16 @@ security and privacy.
 
 \section{Design}
 
+\subsection{Anonymouth Architecture Review}
+
+The architecture of Anonymouth is that of a conventional desktop
+application.  It uses a layered architecture with essentially two main
+components: the frontend Graphical User Interface (GUI) and the
+backend, consisting of the Weka machine learning toolkit and Jstylo.
+Jystlo is PSAL's stylometric analysis software.   Since Anonymouth was
+designed as a monolithic application, there are direct dependencies
+between the layers without the use of an adaptation layer.
+
 \section{Security Analysis}
 
 \section{Privacy Analysis}
