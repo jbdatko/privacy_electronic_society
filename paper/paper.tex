@@ -241,9 +241,69 @@ control and manage with a web service than packaged software.
 
 \subsubsection{Performance.}
 
+The performance of the Stylometry Service
+
 \subsubsection{Security.}
 
+A number of attack vectors for the web application currently exist. We
+discuss those which seem most significant here below. However one key
+security implication of a web-delivered Stylometry Service is that it
+is expected to be delivered over the web, can be accessed in this configuration by anyone with knowledge of its unique URL (or .onion
+address). This allows adversaries greater opportunity to attempt to
+penetrate the security of the web application relative to a client
+application installed on a PC that is not internet connected.
+
+It is expected that, before the service would be used in a real-world
+use case, a user would configure and deploy supporting databases
+associated with the login and SSL options available in the
+Play Framework.
+
+Although web accessbility may be a significant risk from a usability
+standpoint, the anecdotal infrequency with which adversarial
+stylometry software is used even among privacy-conscious users as
+determined by conversations with colleagues of the authors
+suggests that delivery of this functionality via a web page (or even
+potentially via a browser plugin functional across multiple web pages)
+may be an appropriate trade-off to make.
+
+Beyond the concerns mentioned above, a number of specific attack
+vectors remain for a stylometric web service in general and for our
+implementation in particular:
+
+Man in the middle attacks: If a user accepts a rogue SSL certificate, it
+may be possible to create a "man in the middle" attack where the user
+believes he/she is communicating with a specific Stylometry Service,
+but is infact communicating via an impersonated target.
+
+Replay attacks: An evesdropper may 'replay' a message to the
+webservice in an attempt to surrepituously revert parts of the text to
+earlier versions. This may be possible as it is not documented whether
+the current implementation uses nonces when transmitting messages.
+
+HTML5 Canvas attacks: The etherpad implementation uses the new
+'canvas' element introduced in HTML5 extensively. Recently an attack
+has been documented
+(http://www.contextis.com/files/Browser_timing_Attacks.pdf) whereby
+Firefox optimizations in the implementation of the
+requestAnimationFrame method have been used by to detect differences
+in link coloring across frames (allowing an adversary to determine if
+a particular styometry service has been visited, for instance)
+
+Note: We do not know if any of these vectors allows for a specific
+attack, but suggest they should be considered for any future
+implementation research in the area of stylometric web services using
+a similar architecture.
+
 \subsubsection{Testability.}
+
+The web service UI is amenable to automated testing via web testing
+frameworks such as Selenium (although such tests were not written for
+this project). JUnit tests, in contrast, were written to test both
+service method paths implemented. The authors consider the fact that
+this application is delivered as a web application with a distinct
+service layer to be a positive from the standpoint of testability, as
+it allows users who may wish to modify the service the ability to
+expand an existing unit test suite.
 
 \subsubsection{Usability.}
 
@@ -252,13 +312,179 @@ control and manage with a web service than packaged software.
 
 \section{Security Analysis}
 
-\section{Privacy Analysis}
+\section{Privacy and Anonymity Analysis}
+
+The privacy of a user accessing the web service is expected to be
+ensured via the use of TLS/SSL encryption for all data transmitted
+between the client and server. The anonymity of the user is expected
+to be promoted via the use of an Onion Routing protocol such as Tor,
+to ensure that the IP of the client cannot be directly linked to the
+IP of the service.
 
 \section{Implementation Details}
 
+We implemented a web application based on the Play Web Application
+Framework in Java. This web application had a reference to a modified
+version of JSAN which was forked from the PSAL Anonymouth repository
+(https://github.com/psal/anonymouth) on September 29, 2013. In
+addition the application has major dependencies on JQuery, Twitter
+Bootstrap (for page layout), and Etherpad  (an open-source collaborative text editing
+web application and library). Etherpad (specifically Etherpad Lite is
+the version used here) in turn has major dependencies on
+node.js for building and running the backend service.
+
+At a high level the implementation is as follows: A user browses to
+the Stylometry Service via a web browser. This causes the Play
+Framework web application to serve up a web page with an Etherpad control
+and instructions for the user to enter in the document they wish to
+anonymize. The etherpad control is implemented as an iframe which
+serves an Etherpad that is connected to the node.js server running the
+Etherpad backend (both servers should reside on the same domain,
+running on different ports). The page served by Play also contains a
+button which allows the author to specify when he or she would like to
+submit the document for anonymization to Anonymouth. Because the
+Anonymouth analysis process depends on a number of
+computationally-intensive algorithms (among them running SMO analysis
+in Weka as well as a Basic-9 feature stylometric analysis) we
+implemented this calculation asynchronously. When a user clicks the
+button to run an analysis, JQuery is used to issue a HTTP POST
+containing in the message body a JSON-encoded
+representation of the current Etherpad text to an endpoint at
+/getAnonymouthInfoJSON. During the time that the Anonymouth analysis
+is underway, a spinner control from the spin.js library is used to
+indicate to the user than an analysis is underway. The fact that the
+request is made to Anonymouth asynchronously allows a user to continue
+editing the text while an analysis is running, allowing for a smooth
+user experience.
+
+The web service as implemented currently supports only 1 author as the assumption is
+made that the author has pre-configured the "doc set" (also referred
+to as 'problem set' in Anonymouth source) that provides references as
+to the author's own writing style, as well as writing samples for
+other authors that will be used as a reference for writing styles that
+are different than that of the active author. The user can
+additionally configure the anonymouth properties file
+(anonymouthprop.prop) in the jsan resources directory to influence
+settings such as the feature set to use for stylometric identification
+as well as the number of threads to use and maximum number of features
+to analyze.
+
+One configured, the call to the getAnonymouthInfoJSON input will
+overwrite the "test.txt" file on disk that is configured in the provided problem
+set. This will ensure that changing the document in Etherpad forces an
+update to the test file and thus ensuring that the 'latest' document
+is always anonymized. Once the problem set has been updated, the
+'Anonymouth library' is invoked. The 'Anonymouth library' is a forked
+version of the current Anonymouth application, which is designed to be
+used behind a Swing/AWT rich client GUI. A number of implementation
+challenges were present when trying to separate the core anonymization
+logic of Anonymouth from its GUI implementation - most specifically,
+although an 'engine' namespace exists which holds much of the
+anonymization logic, significant dependencies still existed between
+the 'engine' and the 'GUI' namespaces, specifically in the event
+handlers associated with the Editor screen and the GUIMain classes. Much of the work in this
+project consisted of reducing the coupling between these two
+namespaces.
+
+As much of the configuration logic was handled at the GUI layer (via
+ThePresident and GUIMain classes) we took the approach of refactoring
+the GUI layer to work in a 'headless' mode, that is, without any
+windows launching. Long-term it would be preferable to have no
+dependencies on the GUI namespace at all for the Stylometry Service,
+however this could not be achieved in the available timeframe for this
+project. The web service thus invokes a modified version of the
+ThePresident class, which coordinates reading configuration files,
+loading the configured problem set, and using numerous libraries
+(JGAAP and Weka among them) to conduct an adversarial stylometric
+analysis. The results are returned by the web service in the form of a
+JSON-encoded list of words to remove, as well as an indication of
+'changes needed' to the current text to reach an acceptable level of
+anonynmity.
+
+While this analysis has been running, the UI has been waiting on a
+response to the request made of the Stylometric Service. Once this
+request is returned, a request is made to spin.js library to stop the
+spinner, and JQuery is again used to update a div on the page with the
+results of the adversarial stylometric analysis. The JQuery Promises
+interface was used to ensure that the UI correctly waited for these
+otherwise asynchronous requests to be completed in the right order.
+
+The web application (bundled with all dependencies) can be downloaded
+by cloning https://github.com/LRParser/anonymouth and running the
+following command:
+
+./bootstrap.sh
+
+This command will copy the latest JSAN JAR files to the 'lib'
+directory of the Play Framework Web Application, start a Play
+Framework Server on port 9000, and start an Etherpad Lite server on
+port 9001 over node.js.
+
 \section{Comparison to Stand-alone Application}
 
+The stand-alone application has both advantages and disadvantages
+relative to the web service. To start with advantages: it contains
+more robust error handling, offers a GUI to create a problem set, and
+provides a richer editing experience for anonymized
+texts. Disadvantages concern ease of use (users must download and
+execute a JAR file) and supported platforms (it is unlikely that this
+JAR file will be supported on many mobile phones, for instance). The
+Stylometry Service, in contrast, is potentially more accessible than
+the standalone application: it can be accessed via mobile phones and
+tablets, for instance. Likewise application delivery may be simpler -
+nothing must be downloaded locally. Furthermore, the web application
+maintains a 'timeline' of changes made to a text and also allows for
+simple multi-party anonymization of documents.
+
+Disadvantages to the web application include the fact that it offers fewer anonymization
+features (for instance, highlighting of specific text passages),
+instead focusing primarily on 'words to remove'. Furthermore, its
+security footprint is less well known, as it introduces a number of
+new dependencies / potential attack vectors such as JQuery, Twitter
+Bootstrap, Etherpad Lite, node.js, etc.
+
+For a user likely to be using
+mobile devices or a casual user looking to quickly anonymize texts,
+we suggest that the web interface may be a better option. For a user
+facing a highly sophisticated adversary and needing detailed
+anonymization suggestions, we suggest that the stand-alone application
+may be a better option. We note that there is no technical reason that
+could keep the web application from offering all of the same
+anonymization suggestions as the standalone application, and thus is
+may be the case that in the future the web application could be
+recommendable to a wider range of users.
+standalone client
+
 \section{Evaluation}
+
+Although time didn't permit detailed user testing of the web
+application, the authors did conduct one experiment with two users
+using Amazon Mechanical Turk. Users were given 45 minutes to anonymize
+a document. The title of the request was "Help re-phrase approx. 500
+word texts as part of a research project". Specifically users were
+asked, 'Re-phrase the text in the below-linked document while keeping
+the original meeting. Substitute synonyms, change punctuation (I am to
+I'm), split up / join sentences, etc. This is part of a research
+project to see how well different persons can make a text appear as if
+it wasn't written by the original author.'
+
+The responses of users on Mechanical Turk (who were trying to
+anonymize a text without any supporting software) were compared with
+anonymization attempts by the authors of this paper against the same
+document. The anonymization attempts by the authors took place before
+reviewing the submissions from Mechanical Turk. For one sample paper,
+d 09.txt from the Brennan-Greenstadt corpus (Michael Brennan and Rachel Greenstadt. Practical Attacks Against Authorship Recognition Techniques in Proceedings of the Twenty-First Conference on Innovative Applications of Artificial Intelligence (IAAI), Pasadena, California, July 2009.
+), we noted that Anonymouth returned a "changes needed" score
+on the original document of 2.518, 2.677 for the users 'naive' attempt
+to anonymize over Mechanical Turk, and 2.467 for the attempt of one of
+the authors to anonymize using the web application created in this
+paper. Each of the two anonymization attempts for the 500-word
+document took approximately 15 minutes. Although these results are far from achieving statistical
+significance, they do suggest that it may be possible to use this
+software to achieve anonymization levels which surpass those of a
+'naive' anonymization attempt.
+
+
 
 \section{Conclusion}
 
