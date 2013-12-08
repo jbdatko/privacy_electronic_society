@@ -132,6 +132,96 @@ Jystlo is PSAL's stylometric analysis software.   Since Anonymouth was
 designed as a monolithic application, there are direct dependencies
 between the layers without the use of an adaptation layer.
 
+This design is sufficient for Anonymouth in its current form.  As a
+desktop appliccation, the user can anonymize her and the document
+locally without any additional attack vectors.
+
+\subsection{Requirements for Web Service}
+
+The architecture for a web service imposes different requirements on
+an application.  First and foremost, since Anonymouth is a privacy
+enhancing technology, the web service \emph{must} not degrade the
+privacy protection of the application.  This is a challenge when
+migrating from a desktop to web service since the desktop application
+does not use any networked communicaiton.  However, there is little
+benefit to using Anonymouth on the web if it compromises one's
+privacy.
+
+\subsubsection{Low-latency.}
+The web service should be near-real-time, i.e. low-latency.  We don't
+specify a time requirement but the response should be in the order of
+milliseconds to seconds.  A high latency system would not be well
+suited for a web service.  An example high latency system could simply
+entail sending an encrypted email to a third party who uses Anonymouth
+locally and returns the encrypted result.  While this high-latency
+system seems trivial, note that a naive implementation will reduce the
+user's privacy.  For example, email is very subject to traffic
+analysis (CITE) and encrypted email is easy to detect (CITE),
+therefore this act alone would raise suspiction.  If this third party
+was offering a high-latency anonymiziation service for numerous
+people, the network graph would be easy to detect.
+
+\subsection{Architecture Qualities}
+There are several qualities of a system architecture that are
+considers foundational (CITE lem bass).  These are: availability,
+interoperability, modifiability, performance, security, testability,
+and usability.  In additional we add privacy as an architecture
+quality in our review.
+
+Availability is the measure of the measure of the accesibility and
+realibility of the system, e.g. how well does it handle errors.
+Interoperability refers to the degree with which a system can interact
+with its components or other systems.  Modifiability is important for
+large systems so that they can be easily maintained and scale.  The
+response of the system to input is its performance.  Security is the
+review of a system's ability to protect sensitive data and prevent
+unautorized and undesired behaviour.  Testability is an important
+factor not only in development but also in a deployed system to ensure
+that the system is working as designed.  Usability is notoriously bad
+for security software (CITE How Johnny) and refers to the interaction
+design.  Lastly, by privacy we mean how well a user's anonymitity is
+protected.
+
+In the following sections, we provide an analysis of each quality and
+define the requirements for a stylometric web service.
+
+
+\subsubsection{Availability.}
+
+If the user can not access the web service, then the user is in the
+same situation as having a device that can not run Anonymouth
+locally.  The entry point to the web service requires a web server.
+Realistically, this service will never see the traffic that FaceBook
+or Twitter experiences, but the web server should be handle thousands
+of requests per day.
+
+A common attack to block availability is a Denial-of-Service (DoS)
+attack.  A DoS attack is akin to receiving a momentarily burst in
+traffic, i.e. the ``Slashdot effect.''  The difference lies in the
+motivation for the sudden attention.  Thus, a service that is
+resistant to DoS attacks also scales well to large second-derivative
+increases in traffic.
+
+There are many implemenation details to achieve availability that are
+beyond the scope of this paper.  We attest that a stylometric service
+needs to be available and should consider the effects of sudden
+traffic increases.
+
+\subsubsection{Interoperability.}
+
+\subsubsection{Modifiability.}
+
+\subsubsection{Performance.}
+
+\subsubsection{Security.}
+
+\subsubsection{Testability.}
+
+\subsubsection{Usability.}
+
+\subsubsection{Privacy.}
+
+
 \section{Security Analysis}
 
 \section{Privacy Analysis}
