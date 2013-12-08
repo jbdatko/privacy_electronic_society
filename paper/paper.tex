@@ -118,8 +118,6 @@ ensure that service does not compromise its user's privacy.  In
 Section \ref{sec:design} we provide our architecture and analysis the
 security and privacy.
 
-
-
 \section{Design}
 
 \subsection{Anonymouth Architecture Review}
@@ -148,9 +146,16 @@ benefit to using Anonymouth on the web if it compromises one's
 privacy.
 
 \subsubsection{Low-latency.}
-The web service should be near-real-time, i.e. low-latency.  We don't
-specify a time requirement but the response should be in the order of
-milliseconds to seconds.  A high latency system would not be well
+The web service as implemented is near-real-time, i.e. low-latency,
+bounded primarily be the performance of Anonymouth. One key feature of
+the current implementation is the asynchronous processing of
+stylometric information, which allows a user to continually modify a
+text while anonymity information is calculated in the background. The
+latency of the response times for each stylometric analysis is on the
+order of 1 to 2 minutes in the default configuration (see Performance
+section for futher details).
+
+A high latency system would not be well
 suited for a web service.  An example high latency system could simply
 entail sending an encrypted email to a third party who uses Anonymouth
 locally and returns the encrypted result.  While this high-latency
@@ -209,7 +214,7 @@ traffic increases.
 
 \subsubsection{Interoperability.}
 
-The stylometric web service should be interoperability with the modern
+The stylometric web service we implemented is interoperable with the modern
 web architecture.  Specifically, it should be a service based on
 Representational State Transfer (REST)\cite{Fielding2000}.  REST web
 services define a framework that is client-server, has a uniform
@@ -217,7 +222,6 @@ interface based on HTTP verbs, and supports a layered architecture.
 These features are in-line with the goals of a stylometric web
 service.  Using a REST service, the client software can be a web
 browser, which is nearly ubiqiteious on mobile devices.
-
 
 \subsubsection{Modifiability.}
 
@@ -241,7 +245,26 @@ control and manage with a web service than packaged software.
 
 \subsubsection{Performance.}
 
-The performance of the Stylometry Service
+The performance of the Stylometry Service as implemented is largely
+determined by that of the Anonymouth service that it uses to get
+stylometry suggestions. For an analysis of 1 500-word test document vs
+23 documents from 4 'other' authors and using 8 training documents
+from the to-anonymize author, we recorded a total of 67 seconds
+required for the Anonymouth analysis, with less than 1 additional
+second used to update the client UI, on a 3.3 Ghz Core i5 Ubuntu 12.04
+Desktop machine, using 1 calculation thread for Anonymouth. These results suggests that any attempts at
+performance optimization should center around optimizing the
+performance of the Anonymouth configuration.
+
+After each stylometric analysis is complete, the web service ensures
+all relevant anonymouth resources are closed. This allows the web
+service to be used over a long period of time (20 or more
+anonymization attempts have been tested) without memory leaks noted.
+
+Further performance testing and optimization is required in order to support a true
+multi-user service. The authors would suggest using a web service
+based load test framework, such as Apache's JMeter or LoadUI, in order
+to fully test the service under various potential user loads.
 
 \subsubsection{Security.}
 
@@ -282,8 +305,7 @@ the current implementation uses nonces when transmitting messages.
 
 HTML5 Canvas attacks: The etherpad implementation uses the new
 'canvas' element introduced in HTML5 extensively. Recently an attack
-has been documented
-(http://www.contextis.com/files/Browser_timing_Attacks.pdf) whereby
+has been documented (see Contextis Browser Timing Attacks white paper) whereby
 Firefox optimizations in the implementation of the
 requestAnimationFrame method have been used by to detect differences
 in link coloring across frames (allowing an adversary to determine if
@@ -455,7 +477,7 @@ may be the case that in the future the web application could be
 recommendable to a wider range of users.
 standalone client
 
-\section{Evaluation}
+\section{Single User Evaluation}
 
 Although time didn't permit detailed user testing of the web
 application, the authors did conduct one experiment with two users
@@ -484,58 +506,20 @@ significance, they do suggest that it may be possible to use this
 software to achieve anonymization levels which surpass those of a
 'naive' anonymization attempt.
 
+\section{Multiple Concurrent User Evaluation}
 
+TODO
 
 \section{Conclusion}
 
-
-\section{Proposal stuff --- will be removed}
-
-
-\section*{Approach}\label{sec:approach}
-
-We propose to build a stylometric service around JStylo and
-Anonymouth.  However, this project is more than just porting JSAN to
-the web.  With a migration to a web service from locally running
-software, the anonymity attack vector changes significantly.  We
-intend to design and evaluate privacy enhancing techniques for
-a stylometric web service.
-
-\subsection{Design}
-
-Our design goal is to increase both the anonymity and availability of
-JSAN through this service.  In order to increase the anonymity, we
-will need to protect the service from traffic analysis, which we
-intend to do by running a Tor hidden service.  To improve the
-anonymity and effectiveness of JSAN, we intend to incorporate a
-third-party re-writer and in the future, a document mixer.  The
-document mixer will randomize the target document, potentially with
-other target documents, and present a re-writer the mixed document.
-The re-writer will be able to use the Anonymouth-like interface to
-anonymize the document without being able to infer the author.  Also,
-the mixing will help obfuscate the contents of the document as well.
-However, for this initial attempt, we will focus on the third-party
-anonymization service.
-
-Although in this initial effort we do not intent to conduct usability
-testing, we will consider incentive options for re-writers.  Like
-other anonymity networks, we believe that anonymity is improved with a
-diverse user base.  The challenge is building the user base.  While we
-do not intend to conduct user testing for this initial effort, we will
-consider various incentive options like actual payment to
-gamification.
-
-\subsection{Implementation}
-
-Our initial idea is to host this service on Amazon Web Services
-(AWS).  For the user interface, we are planning to implement the front
-end in AngularJS.  Since the existing code is Java, migrating to the
-Play Framework seems like a natural progression.  The text editor
-functionality will be converted to Firepad, an open source
-collaborative editor.  While real-time collaboration is not
-necessarily needed, we think that an ``Anonymouth'' user, an
-Artificial Agent, would assist the re-writer in edits.
-
+There are two significant contributions as a result of this work.  The
+first is a stylometric web service.  This advances the usability
+and capabilities of JSAN and provide a framework for more expansive
+user testing in the future. The user testing results suggest that a
+web interface may offer usability advantages while still providing a
+meaningful increase in author anonymity.  The second contribution is that this is
+the first framework for multi-author adversarial stylometry.  Our
+results here suggest TODO.
 
 \section*{Related Work}\label{sec:related}
 This proposal extends the work from Drexel's PSAL, who have made
@@ -556,42 +540,6 @@ however, there has been recent research de-anonymizing popular hidden
 services \cite{oakland2013-trawling}.  We will provide a discussion on
 the design and experience of enabling a hidden service, but we will
 focus on this aspect.
-
-\subsection{Novelty}\label{sec:novelty}
-
-There are two significant contributions as a result of this work.  The
-first is a stylometric web service.  This will advance the usability
-and capabilities of JSAN and provide a framework for more expansive
-user testing in the future.  The second contribution is that this is
-the first framework for multi-author adversarial stylometry.  While
-single author stylometry has been recently studied, multi-author
-documents have not received significant attention.
-
-\section*{Evaluation}\label{sec:evaluation}
-This effort is intended to produce several artifacts.  The first is an
-evaluation of the privacy architecture of a cloud web service.  Here
-we intend to describe the challenges and present and evaluate a
-privacy-by-architecture system.  Second, we will provide a survey on
-various incentive approaches and suggest a possible method.  Lastly,
-we will provide a prototype web service and evaluate it.  Specifically
-we will compare the web service to the standalone tools and evaluate
-it for accuracy and usability.  Additionally, we will experiment with
-the third party anonymization by re-writing each other's writing
-samples.  We will provide an evaluation on the perceived difficultly
-of re-writing one's own work to that in the mixed system.
-
-
-\section*{Milestones}\label{sec:milestones}
-
-Table \ref{tab:milestones} contains a proposed timeline for completing
-this project.  This work will be split among two developers and there
-are several modules that can be independently developed.  In order to
-re-architect JSAN, we first need to become familiar with the existing
-software.  While this software will be running as a service, we do not
-intend to release it to the general public in this time-frame.  We
-will conduct the evaluation with perhaps a very limited subset of
-other students.
-
 
 \begin{table}
   \centering
