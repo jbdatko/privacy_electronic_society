@@ -209,7 +209,35 @@ traffic increases.
 
 \subsubsection{Interoperability.}
 
+The stylometric web service should be interoperability with the modern
+web architecture.  Specifically, it should be a service based on
+Representational State Transfer (REST)\cite{Fielding2000}.  REST web
+services define a framework that is client-server, has a uniform
+interface based on HTTP verbs, and supports a layered architecture.
+These features are in-line with the goals of a stylometric web
+service.  Using a REST service, the client software can be a web
+browser, which is nearly ubiqiteious on mobile devices.
+
+
 \subsubsection{Modifiability.}
+
+One of the goals of the service is provide a platform for stylometric
+research.  In this sense in must be modifable to accomodate different
+kinds of experiments including ones not currently anticipated.
+Software engineering best pratices are applicable here mainly having
+well abstracted interfaces and modular components.  As a RESTful web
+service, each endpoint should have a concise application programming
+interface (API) for a given feature set.  For example, there should be
+a stylometry endpoint that can process text and return features.
+Other services, such as an adversarial stylometry service, should use
+the stylometric service via its REST API.
+
+A web service has a distinct advantage here over the modifiability of
+the desktop software.  One can deploy an updated version of the
+software by pushing the update to servers and instantly clients will
+have the new version.  As a research platform, this is a very valuable
+feature.  For example, split testing or A/B testing, is much easier to
+control and manage with a web service than packaged software.
 
 \subsubsection{Performance.}
 
