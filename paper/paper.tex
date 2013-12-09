@@ -62,7 +62,8 @@ Privacy, Security, and Automation Lab (PSAL) at Drexel University to
 assist authors in anonymize their writing.
 
 Currently the JStylo and Anonymouth integrated open-source project
-(JSAN) is available to download and can be installed on a machine that
+(JSAN) \cite{BrennanG09}, \cite{journals/tissec/BrennanAG12},
+\cite{conf/pet/McDonaldACSG12} is available to download and can be installed on a machine that
 runs the Java Virtual Machine (JVM).  While JSAN has been successfully
 demonstrated to be effective in assisting authors with adversarial
 stylometry \cite{journals/tissec/BrennanAG12}, the constraint of
@@ -155,20 +156,20 @@ latency of the response times for each stylometric analysis is on the
 order of 1 to 2 minutes in the default configuration (see Performance
 section for futher details).
 
-A high latency system would not be well
-suited for a web service.  An example high latency system could simply
-entail sending an encrypted email to a third party who uses Anonymouth
-locally and returns the encrypted result.  While this high-latency
-system seems trivial, note that a naive implementation will reduce the
-user's privacy.  For example, email is very subject to traffic
-analysis (CITE) and encrypted email is easy to detect (CITE),
-therefore this act alone would raise suspiction.  If this third party
-was offering a high-latency anonymiziation service for numerous
-people, the network graph would be easy to detect.
+A high latency system would not be well suited for a web service.  An
+example high latency system could simply entail sending an encrypted
+email to a third party who uses Anonymouth locally and returns the
+encrypted result.  While this high-latency system seems trivial, note
+that a naive implementation will reduce the user's privacy.  For
+example, email is very subject to traffic analysis
+\cite{Mathewson04practicaltraffic} and encrypted email is easy to
+detect, therefore this act alone would raise suspiction.  If
+this third party was offering a high-latency anonymiziation service
+for numerous people, the network graph would be easy to detect.
 
 \subsection{Architecture Qualities}
 There are several qualities of a system architecture that are
-considers foundational (CITE lem bass).  These are: availability,
+considers foundational\cite{Bass:2012:SAP:2392670}.  These are: availability,
 interoperability, modifiability, performance, security, testability,
 and usability.  In additional we add privacy as an architecture
 quality in our review.
@@ -183,9 +184,9 @@ review of a system's ability to protect sensitive data and prevent
 unautorized and undesired behaviour.  Testability is an important
 factor not only in development but also in a deployed system to ensure
 that the system is working as designed.  Usability is notoriously bad
-for security software (CITE How Johnny) and refers to the interaction
-design.  Lastly, by privacy we mean how well a user's anonymitity is
-protected.
+for security software \cite{Whitten:1999:WJC:1251421.1251435} and
+refers to the interaction design.  Lastly, by privacy we mean how well
+a user's anonymitity is protected.
 
 In the following sections, we provide an analysis of each quality and
 define the requirements for a stylometric web service.
@@ -245,28 +246,18 @@ control and manage with a web service than packaged software.
 
 \subsubsection{Performance.}
 
-The performance of the Stylometry Service as implemented is largely
-determined by that of the Anonymouth service that it uses to get
-stylometry suggestions. For an analysis of 1 500-word test document vs
-23 documents from 4 'other' authors and using 8 training documents
-from the to-anonymize author, we recorded a total of 67 seconds
-required for the Anonymouth analysis, with less than 1 additional
-second used to update the client UI, on a 3.3 Ghz Core i5 Ubuntu 12.04
-Desktop machine, using 1 calculation thread for Anonymouth. These results suggests that any attempts at
-performance optimization should center around optimizing the
-performance of the Anonymouth configuration.
-
-After each stylometric analysis is complete, the web service ensures
-all relevant anonymouth resources are closed. This allows the web
-service to be used over a long period of time (20 or more
-anonymization attempts have been tested) without memory leaks noted.
-
-Further performance testing and optimization is required in order to support a true
-multi-user service. The authors would suggest using a web service
-based load test framework, such as Apache's JMeter or LoadUI, in order
-to fully test the service under various potential user loads.
-
 \subsubsection{Security.}
+
+
+\subsubsection{Testability.}
+
+
+\subsubsection{Usability.}
+
+\subsubsection{Privacy.}
+
+
+\section{Security Analysis}
 
 A number of attack vectors for the web application currently exist. We
 discuss those which seem most significant here below. However one key
@@ -293,46 +284,28 @@ Beyond the concerns mentioned above, a number of specific attack
 vectors remain for a stylometric web service in general and for our
 implementation in particular:
 
-Man in the middle attacks: If a user accepts a rogue SSL certificate, it
+{\bf Man in the middle attacks}: If a user accepts a rogue SSL certificate, it
 may be possible to create a "man in the middle" attack where the user
 believes he/she is communicating with a specific Stylometry Service,
 but is infact communicating via an impersonated target.
 
-Replay attacks: An evesdropper may 'replay' a message to the
+{\bf Replay attacks}: An evesdropper may 'replay' a message to the
 webservice in an attempt to surrepituously revert parts of the text to
 earlier versions. This may be possible as it is not documented whether
 the current implementation uses nonces when transmitting messages.
 
-HTML5 Canvas attacks: The etherpad implementation uses the new
+{\bf HTML5 Canvas attacks}: The etherpad implementation uses the new
 'canvas' element introduced in HTML5 extensively. Recently an attack
-has been documented (see Contextis Browser Timing Attacks white paper) whereby
-Firefox optimizations in the implementation of the
-requestAnimationFrame method have been used by to detect differences
-in link coloring across frames (allowing an adversary to determine if
-a particular styometry service has been visited, for instance)
+has been documented \cite{BrowserTiming} whereby Firefox optimizations
+in the implementation of the requestAnimationFrame method have been
+used by to detect differences in link coloring across frames (allowing
+an adversary to determine if a particular styometry service has been
+visited, for instance)
 
 Note: We do not know if any of these vectors allows for a specific
 attack, but suggest they should be considered for any future
 implementation research in the area of stylometric web services using
 a similar architecture.
-
-\subsubsection{Testability.}
-
-The web service UI is amenable to automated testing via web testing
-frameworks such as Selenium (although such tests were not written for
-this project). JUnit tests, in contrast, were written to test both
-service method paths implemented. The authors consider the fact that
-this application is delivered as a web application with a distinct
-service layer to be a positive from the standpoint of testability, as
-it allows users who may wish to modify the service the ability to
-expand an existing unit test suite.
-
-\subsubsection{Usability.}
-
-\subsubsection{Privacy.}
-
-
-\section{Security Analysis}
 
 \section{Privacy and Anonymity Analysis}
 
@@ -528,6 +501,42 @@ software to achieve anonymization levels which surpass those of a
 \section{Multiple Concurrent User Evaluation}
 
 TODO
+
+\section{Evaluation of Architecture Qualities}
+
+\subsection{Performance.}
+
+The performance of the Stylometry Service as implemented is largely
+determined by that of the Anonymouth service that it uses to get
+stylometry suggestions. For an analysis of 1 500-word test document vs
+23 documents from 4 'other' authors and using 8 training documents
+from the to-anonymize author, we recorded a total of 67 seconds
+required for the Anonymouth analysis, with less than 1 additional
+second used to update the client UI, on a 3.3 Ghz Core i5 Ubuntu 12.04
+Desktop machine, using 1 calculation thread for Anonymouth. These results suggests that any attempts at
+performance optimization should center around optimizing the
+performance of the Anonymouth configuration.
+
+After each stylometric analysis is complete, the web service ensures
+all relevant anonymouth resources are closed. This allows the web
+service to be used over a long period of time (20 or more
+anonymization attempts have been tested) without memory leaks noted.
+
+Further performance testing and optimization is required in order to support a true
+multi-user service. The authors would suggest using a web service
+based load test framework, such as Apache's JMeter or LoadUI, in order
+to fully test the service under various potential user loads.
+
+\subsection{Testability.}
+
+The web service UI is amenable to automated testing via web testing
+frameworks such as Selenium (although such tests were not written for
+this project). JUnit tests, in contrast, were written to test both
+service method paths implemented. The authors consider the fact that
+this application is delivered as a web application with a distinct
+service layer to be a positive from the standpoint of testability, as
+it allows users who may wish to modify the service the ability to
+expand an existing unit test suite.
 
 \section{Conclusion}
 
