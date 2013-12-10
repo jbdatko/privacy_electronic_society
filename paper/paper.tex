@@ -9,9 +9,50 @@
 \usepackage{courier}
 \usepackage{graphicx}
 \usepackage{url}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{verbatim} % used to display code
+\usepackage{hyperref}
+%\usepackage{fullpage}
+\usepackage[ansinew]{inputenc} % german umlauts
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{tikz}
+\usetikzlibrary{calc,through,backgrounds}
+\usepackage{fancyvrb}
+\usepackage{acronym}
+\usepackage{amsthm} % Uuhhh yet another package
+\VerbatimFootnotes % Required, otherwise verbatim does not work in footnotes!
+%\usepackage{listings}
 
+\definecolor{Brown}{cmyk}{0,0.81,1,0.60}
+\definecolor{OliveGreen}{cmyk}{0.64,0,0.95,0.40}
+\definecolor{CadetBlue}{cmyk}{0.62,0.57,0.23,0}
+\definecolor{lightlightgray}{gray}{0.9}
 
 \begin{document}
+
+\lstset{
+language=bash,                          % Code langugage
+basicstyle=\ttfamily,                   % Code font, Examples: \footnotesize, \ttfamily
+keywordstyle=\color{OliveGreen},        % Keywords font ('*' = uppercase)
+commentstyle=\color{gray},              % Comments font
+numbers=left,                           % Line nums position
+numberstyle=\tiny,                      % Line-numbers fonts
+stepnumber=1,                           % Step between two line-numbers
+numbersep=5pt,                          % How far are line-numbers from code
+backgroundcolor=\color{lightlightgray}, % Choose background color
+frame=none,                             % A frame around the code
+tabsize=2,                              % Default tab size
+captionpos=b,                           % Caption-position = bottom
+breaklines=true,                        % Automatic line breaking?
+breakatwhitespace=false,                % Automatic breaks only at whitespace?
+showspaces=false,                       % Dont make spaces visible
+showtabs=false,                         % Dont make tabls visible
+columns=flexible,                       % Column format
+morekeywords={__global__, __device__},  % CUDA specific keywords
+}
 
 %%%%%%%%%%
 % Pdfinfo for PDFTEX
@@ -455,19 +496,19 @@ standalone client
 The web application can be deployed via the following commands on a
 Ubuntu 12.04 desktop installation:
 
+\begin{lstlisting}[caption={Install Dependencies},label={lst:install}]
 sudo apt-get update
 sudo apt-get install ubuntu-desktop ant openjdk-7-jdk postgresql git
 sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
 sudo apt-get install nodejs
-
-# Clone Repository
-
 git clone https://github.com/LRParser/anonymouth.git
+\end{lstlisting}
 
-# Start service
+\begin{lstlisting}[caption={Start Service},label={lst:start}]
 cd anonymouth
 ./bootstrap.sh
+\end{lstlisting}
 
 \section{Single User Evaluation}
 
