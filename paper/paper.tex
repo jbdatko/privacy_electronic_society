@@ -104,14 +104,15 @@ assist authors in anonymize their writing.
 
 Currently the JStylo and Anonymouth integrated open-source project
 (JSAN) \cite{BrennanG09}, \cite{journals/tissec/BrennanAG12},
-\cite{conf/pet/McDonaldACSG12} is available to download and can be installed on a machine that
-runs the Java Virtual Machine (JVM).  While JSAN has been successfully
-demonstrated to be effective in assisting authors with adversarial
-stylometry \cite{journals/tissec/BrennanAG12}, the constraint of
-downloading and installing the software on a machine powerful enough
-to run machine learning algorithms on data sets, limits their
-adoptability.  We propose increase the availability and usability of
-JStylo and Anonymouth by offering them as a web service.
+\cite{conf/pet/McDonaldACSG12} is available to download and can be
+installed on a machine that runs the Java Virtual Machine (JVM).
+While JSAN has been successfully demonstrated to be effective in
+assisting authors with adversarial stylometry
+\cite{journals/tissec/BrennanAG12}, the constraint of downloading and
+installing the software on a machine powerful enough to run machine
+learning algorithms on data sets, limits their adoptability.  We
+propose increase the availability and usability of JStylo and
+Anonymouth by offering them as a web service.
 
 Migrating to a web service would provide JSAN with several benefits.
 This web service would provide adversarial stylometry capabilities to
@@ -287,8 +288,37 @@ control and manage with a web service than packaged software.
 
 \subsubsection{Performance.}
 
+We do not place an specific performance metrics on the service other
+than that it should be reasonably responsive.  Since JStylo relies on
+Weka \cite{Hall:2009:WDM:1656274.1656278} to implement the machine
+learning algorithms, this server should have a decent amount of RAM.
+
 \subsubsection{Security.}
 
+The security features need for a stylometric service are
+authentication, confidentiality, integrity, and repudiation.
+
+{\bf Authentication.}  Users must be able to authenticate the
+service.  We propose that if the service is using HTTPS with a server
+certificate signed by a trusted certificate authority that this will
+suffice.  However, when running behind a Tor Hidden Service, this is
+slightly more complicated.  The service can sign the onion address
+that it provides and Tor will ensure that the address maps to the
+service.  The signature would correspond to a trusted certificate
+authority issued certificate.  Mutual authentication, or
+authentication of the users should \emph{not} be conducted as this
+would either compromise the user's identity.
+
+{\bf Confidentiality.} The service must protect the confidentiality of
+the user's data.  The user is trusting the service with their corpus
+and document to anonymize and that must be revealed to unauthroized
+users.  However, one of the goals of this service is to allow multiple
+authors to collaborate.  In this case, the confidentiality
+requirements are more interesting.  We don't specifiy an
+implementation, but there are various techniques that could satisfy
+this requirement.
+
+Besides multi-authors, the service is also multi-user.
 
 \subsubsection{Testability.}
 
@@ -303,7 +333,8 @@ control and manage with a web service than packaged software.
 A number of attack vectors for the web application currently exist. We
 discuss those which seem most significant here below. However one key
 security implication of a web-delivered Stylometry Service is that it
-is expected to be delivered over the web, can be accessed in this configuration by anyone with knowledge of its unique URL (or .onion
+is expected to be delivered over the web, can be accessed in this
+configuration by anyone with knowledge of its unique URL (or .onion
 address). This allows adversaries greater opportunity to attempt to
 penetrate the security of the web application relative to a client
 application installed on a PC that is not internet connected.
