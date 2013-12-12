@@ -157,28 +157,47 @@ A privacy enhancing technology that is designed to exist as a web
 service faces different challenges than an application.  Attack
 vectors open up on the service from active denial-of-service attacks
 to passive sniffing.  A privacy web service must take great care to
-ensure that service does not compromise its user's privacy.  In
-Section \ref{sec:design} we provide our architecture and analysis the
-security and privacy.
+ensure that service does not compromise its user's privacy.
+
+\subsection{Novelty}
+
+Our novel contribution is the proposal of a stylometric web service
+and identifying the features of such a service.  We have provided a
+prototype implementation and identified areas of additional
+improvement.  Lastly, we suggest combining research from Game
+Artificial Intelligence to improve the usability and effectiveness of
+stylometric techniques.
+
+\subsection{Outline}
+In Section \ref{sec:design} we provide our architecture and analysis the
+security and privacy.  We provide several architectural and security
+features that a stylometric web service must and should have.  Section
+\ref{sec:security} provides a security analysis of the system design.
+A privacy analysis is provided in Section \ref{sec:privacy}.  The
+current state of the implementation is discussed in Section
+\ref{sec:impl} which includes details on how to reproduce our
+results.  Evaluation of the implementation and current architecture is
+provided in Section \ref{sec:evaluation}.
 
 
-\section{Design}
+\section{Design}\label{sec:design}
 
 \subsection{Anonymouth Architecture Review}
 
-The architecture of Anonymouth is that of a conventional desktop
-application.  It uses a layered architecture with essentially two main
-components: the frontend Graphical User Interface (GUI) and the
-backend, consisting of the Weka machine learning toolkit and Jstylo.
-Jystlo is PSAL's stylometric analysis software.   Since Anonymouth was
-designed as a monolithic application, there are direct dependencies
-between the layers without the use of an adaptation layer.  Figure
-\ref{fig:jsan} illustrates the architecture in a layered drawing.  In
-this drawing, components, represented as boxes, can call software
-below and to the right.
+The architecture of the current adversarial stylometric software,
+Anonymouth, is that of a conventional desktop application.  It uses a
+layered architecture with essentially two main components: the
+frontend Graphical User Interface (GUI) and the backend, consisting of
+the Weka machine learning toolkit and JStylo.  JStylo is PSAL's
+stylometric analysis software.  Since Anonymouth was designed as a
+monolithic application, there are direct dependencies between the
+layers without the use of an adaptation layer.  Figure \ref{fig:jsan}
+illustrates the architecture in a layered drawing.  In this drawing,
+components, represented as boxes, can call software below and to the
+right.
 
 This design is sufficient for Anonymouth in its current form.  As a
-desktop appliccation, the user can anonymize her and the document
+desktop application, the user can anonymize her and the document
 locally without any additional attack vectors.
 
 \begin{figure}
@@ -188,37 +207,17 @@ locally without any additional attack vectors.
   \label{fig:jsan}
 \end{figure}
 
-\subsection{Requirements for Web Service}
+\subsection{Requirements for Web Service}\label{sec:reqs}
 
 The architecture for a web service imposes different requirements on
 an application.  First and foremost, since Anonymouth is a privacy
 enhancing technology, the web service \emph{must} not degrade the
 privacy protection of the application.  This is a challenge when
 migrating from a desktop to web service since the desktop application
-does not use any networked communicaiton.  However, there is little
+does not use any networked communication.  However, there is little
 benefit to using Anonymouth on the web if it compromises one's
 privacy.
 
-\subsubsection{Low-latency.}
-The web service as implemented is near-real-time, i.e. low-latency,
-bounded primarily be the performance of Anonymouth. One key feature of
-the current implementation is the asynchronous processing of
-stylometric information, which allows a user to continually modify a
-text while anonymity information is calculated in the background. The
-latency of the response times for each stylometric analysis is on the
-order of 1 to 2 minutes in the default configuration (see Performance
-section for futher details).
-
-A high latency system would not be well suited for a web service.  An
-example high latency system could simply entail sending an encrypted
-email to a third party who uses Anonymouth locally and returns the
-encrypted result.  While this high-latency system seems trivial, note
-that a naive implementation will reduce the user's privacy.  For
-example, email is very subject to traffic analysis
-\cite{Mathewson04practicaltraffic} and encrypted email is easy to
-detect, therefore this act alone would raise suspiction.  If
-this third party was offering a high-latency anonymiziation service
-for numerous people, the network graph would be easy to detect.
 
 \subsection{Architecture Qualities}
 There are several qualities of a system architecture that are
@@ -227,19 +226,19 @@ interoperability, modifiability, performance, security, testability,
 and usability.  In additional we add privacy as an architecture
 quality in our review.
 
-Availability is the measure of the measure of the accesibility and
-realibility of the system, e.g. how well does it handle errors.
+Availability is the measure of the measure of the accessibility and
+reliability of the system, e.g. how well does it handle errors.
 Interoperability refers to the degree with which a system can interact
 with its components or other systems.  Modifiability is important for
 large systems so that they can be easily maintained and scale.  The
 response of the system to input is its performance.  Security is the
 review of a system's ability to protect sensitive data and prevent
-unautorized and undesired behaviour.  Testability is an important
+unauthorized and undesired behavior.  Testability is an important
 factor not only in development but also in a deployed system to ensure
 that the system is working as designed.  Usability is notoriously bad
 for security software \cite{Whitten:1999:WJC:1251421.1251435} and
 refers to the interaction design.  Lastly, by privacy we mean how well
-a user's anonymitity is protected.
+a user's anonymity is protected.
 
 In the following sections, we provide an analysis of each quality and
 define the requirements for a stylometric web service.
@@ -261,7 +260,7 @@ motivation for the sudden attention.  Thus, a service that is
 resistant to DoS attacks also scales well to large second-derivative
 increases in traffic.
 
-There are many implemenation details to achieve availability that are
+There are many implementation details to achieve availability that are
 beyond the scope of this paper.  We attest that a stylometric service
 needs to be available and should consider the effects of sudden
 traffic increases.
@@ -270,19 +269,19 @@ traffic increases.
 
 The stylometric web service we implemented is interoperable with the modern
 web architecture.  Specifically, it should be a service based on
-Representational State Transfer (REST)\cite{Fielding2000}.  REST web
+Representational State Transfer (REST) \cite{Fielding2000}.  REST web
 services define a framework that is client-server, has a uniform
 interface based on HTTP verbs, and supports a layered architecture.
 These features are in-line with the goals of a stylometric web
 service.  Using a REST service, the client software can be a web
-browser, which is nearly ubiqiteious on mobile devices.
+browser, which is nearly ubiquitous on mobile devices.
 
 \subsubsection{Modifiability.}
 
 One of the goals of the service is provide a platform for stylometric
-research.  In this sense in must be modifable to accomodate different
+research.  In this sense in must be modifiable to accommodate different
 kinds of experiments including ones not currently anticipated.
-Software engineering best pratices are applicable here mainly having
+Software engineering best practices are applicable here mainly having
 well abstracted interfaces and modular components.  As a RESTful web
 service, each endpoint should have a concise application programming
 interface (API) for a given feature set.  For example, there should be
@@ -304,6 +303,26 @@ than that it should be reasonably responsive.  Since JStylo relies on
 Weka \cite{Hall:2009:WDM:1656274.1656278} to implement the machine
 learning algorithms, this server should have a decent amount of RAM.
 
+However, we do specify that the service should be low-latency.  The
+web service as implemented is near-real-time, i.e. low-latency,
+bounded primarily be the performance of Anonymouth. One key feature of
+the current implementation is the asynchronous processing of
+stylometric information, which allows a user to continually modify a
+text while anonymity information is calculated in the background. The
+latency of the response times for each stylometric analysis is on the
+order of 1 to 2 minutes in the default configuration.
+
+A high latency system would not be well suited for a web service.  An
+example high latency system could simply entail sending an encrypted
+email to a third party who uses Anonymouth locally and returns the
+encrypted result.  While this high-latency system seems trivial, note
+that a naive implementation will reduce the user's privacy.  For
+example, email is very subject to traffic analysis
+\cite{Mathewson04practicaltraffic} and encrypted email is easy to
+detect, therefore this act alone would raise suspicion.  If
+this third party was offering a high-latency anonymization service
+for numerous people, the network graph would be easy to detect.
+
 \subsubsection{Security.}
 
 The security features need for a stylometric service are
@@ -322,10 +341,10 @@ would either compromise the user's identity.
 
 {\bf Confidentiality.} The service must protect the confidentiality of
 the user's data.  The user is trusting the service with their corpus
-and document to anonymize and that must be revealed to unauthroized
+and document to anonymize and that must be revealed to unauthorized
 users.  However, one of the goals of this service is to allow multiple
 authors to collaborate.  In this case, the confidentiality
-requirements are more interesting.  We don't specifiy an
+requirements are more interesting.  We do not specify an
 implementation, but there are various techniques that could satisfy
 this requirement.
 
@@ -360,9 +379,71 @@ can not protect the anonymity of authors.
 
 \subsubsection{Usability.}
 
+Usability is often sacrificed for security in privacy and security
+software.  Of course, the most secure system is the one that does not
+communicate with any other entity.  The target audience for
+stylometric software are authors, of varying technical capacity.
+Recently, organizations like the Freedom of the Press Foundation
+\cite{pressfreedom} have shown increasing interest in educating
+journalists on cryptographic and privacy enhancing software.  While
+usability is difficult to quantify, the service must be usable by
+non-technical end users without a detailed knowledge in stylometry.
+
 \subsubsection{Privacy.}
 
+The service must protect the privacy of its users.  Specifically, it
+must not leak the corpus nor the target document.  It also must be
+vulnerable to traffic analysis, as that could possibly lead to linkage
+attacks.  Especially because the documents could contain references to
+other accounts or activity that would make them prime for attacks as
+discussed in \cite{Narayanan:2008:RDL:1397759.1398064}.
+
+The privacy of the service should also be maintained.  A critical
+difference between a web service and a standalone application is that
+the software on a web service runs on third-party hardware.  While
+perhaps obvious, this as fundamental trust issues.  Therefore, the
+knowledge that a stylometric service is running in a certain
+geographical area, or more specifically, on a specific Internet
+Service Provider, could make it vulnerable to attacks.
+
+Furthermore, it is assumed that the host of the service is trusted.
+This is a significant assumption since users of most ``Cloud''
+providers rent time on the hardware.  Worse, they are not the sole
+users of said hardware and their application is shared with other
+users.  The choice of a service provider is outside the scope of this
+document, but this consideration should not be made lightly when
+choosing where to deploy the service.
+
+The service must not engage in browser fingerprinting
+\cite{Eckersley:2010:UYW:1881151.1881152}.  If deployed behind a Tor
+Hidden service, browsers should be nearly indistinguishable when
+everybody is using the Tor Browser Bundle.  Debug information must be
+kept to a minimum as well.  This service must use the ``Privacy by
+Architecture'' approach \cite{Spiekermann_Cranor:2009} and ensure that
+debug information and collection is kept to a minimum.  Debug
+information is particularly sensitive since to re-create a bug, one
+may need the target document.  However, under no circumstances should
+the user's document be released to developers as that would compromise
+the confidentiality of the document.  Plus, this extends opportunities
+for attack vectors through debug channels.
+
 \subsection{Example Architecture}
+
+Figure \ref{fig:jsanaas} illustrates an example architecture with
+qualities from Section \ref{sec:reqs}.  The main entry point is a
+lightweight dispatcher that sits behind a Tor Hidden Service.  The
+user only need to know this address and can connect to the service
+through Tor.
+
+The backend has several modular endpoints.  The first of which is a
+directory service.  The directory service accepts registration from
+other services and provides the location of the service when
+queried.  This feature help to provide availability and testability.
+Especially as a research platform, additional services or endpoints
+may need to be added to the system.  A registration service tracks the
+dynamic installation of such services and when all services in the
+system check with the registration service, they can quickly use the
+new addition.
 
 \begin{figure*}
   \centering
@@ -370,7 +451,21 @@ can not protect the anonymity of authors.
   \caption{Example JSANaaS Architecture as a Deployment Diagram}
   \label{fig:jsanaas}
 \end{figure*}
-\section{Security Analysis}
+
+Notice that each feature is split into its endpoint.  This also helps
+with the modularity and availability.  Backup endpoints can be
+registered with the registration service and all endpoints frequently
+queried, or they can provide notifications, such that services
+maintain their uptime.  This modularity also helps with moving the
+location of the service.  As long as the lightweight front-end remains
+known, all backend services can move without the knowledge of the
+user.  Perhaps each individual backend service would be its own Tor
+Hidden Service.  The onion addresses would only to be known to the
+Registration Service.  However, as each Hidden Service connection is
+six hops through Tor, the performance impact would have to be more
+closely studied.
+
+\section{Security Analysis}\label{sec:security}
 
 A number of attack vectors for the web application currently exist. We
 discuss those which seem most significant here below. However one key
@@ -386,7 +481,7 @@ use case, a user would configure and deploy supporting databases
 associated with the login and SSL options available in the
 Play Framework.
 
-Although web accessbility may be a significant risk from a usability
+Although web accessibility may be a significant risk from a usability
 standpoint, the anecdotal infrequency with which adversarial
 stylometry software is used even among privacy-conscious users as
 determined by conversations with colleagues of the authors
@@ -401,11 +496,11 @@ implementation in particular:
 {\bf Man in the middle attacks}: If a user accepts a rogue SSL
 certificate, it may be possible to create a "man in the middle" attack
 where the user believes she is communicating with a specific
-Stylometry Service, but is infact communicating via an impersonated
+Stylometry Service, but is in fact communicating via an impersonated
 target.
 
-{\bf Replay attacks}: An evesdropper may replay a message to the
-webservice in an attempt to surrepituously revert parts of the text to
+{\bf Replay attacks}: An eavesdropper may replay a message to the
+web service in an attempt to surreptitiously revert parts of the text to
 earlier versions. This may be possible as it is not documented whether
 the current implementation uses nonces when transmitting messages.
 
@@ -414,24 +509,47 @@ the current implementation uses nonces when transmitting messages.
 has been documented \cite{BrowserTiming} whereby Firefox optimizations
 in the implementation of the requestAnimationFrame method have been
 used by to detect differences in link coloring across frames (allowing
-an adversary to determine if a particular styometry service has been
+an adversary to determine if a particular stylometry service has been
 visited, for instance).
 
-Note: We do not know if any of these vectors allows for a specific
+We do not know if any of these vectors allows for a specific
 attack, but suggest they should be considered for any future
 implementation research in the area of stylometric web services using
 a similar architecture.
 
-\section{Privacy and Anonymity Analysis}
+Lastly, this application uses numerous third party libraries and
+technologies.  The added complexity from each additional library or
+toolkit, exposes the service to additional vulnerabilities.  It also
+makes the software more difficult to audit by third parties.
+Deploying a Stylometric service required numerous frameworks, some of
+which are in very rapid development.
+
+\section{Privacy and Anonymity Analysis}\label{sec:privacy}
 
 The privacy of a user accessing the web service is expected to be
 ensured via the use of TLS/SSL encryption for all data transmitted
 between the client and server. The anonymity of the user is expected
 to be promoted via the use of an Onion Routing protocol such as Tor,
 to ensure that the IP of the client cannot be directly linked to the
-IP of the service.
+IP of the service.  The Tor Hidden Service also provides protection of
+the location of the service.
 
-\section{Implementation Details}
+A current weakness of this system is that the service is considered a
+trusted third party.  If the service is compromised, the documents can
+be extracted and the author revealed.  We considered other
+architectures, for example, one that delivered a more feature full
+application to the browser, however this would be more like a content
+delivery system.
+
+Additionally, by multi-author implementation exposes the target
+document to another user.  Therefore, the circle of trust is extended
+from the service to the other party.  There is also no authentication
+of the other party.  The service should provide an OTR like mechanism
+for inviting the other party into the editing session and verifying
+the authenticity of the user.
+
+
+\section{Implementation Details}\label{sec:impl}
 
 We implemented a web application based on the Play Web Application
 Framework in Java. This web application had a reference to a modified
@@ -441,13 +559,21 @@ on JQuery, Twitter Bootstrap (for page layout), and Etherpad (an
 open-source collaborative text editing web application and library)
 \cite{etherpad}. Etherpad (specifically Etherpad Lite is the version
 used here) in turn has major dependencies on node.js for building and
-running the backend service.
+running the backend service.  Figure \ref{fig:text_endpoint} shows an
+example screenshot of the stylometric only endpoint.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.4\textwidth]{img/text_endpoint.png}
+  \caption{Screenshot of the text endpoint}
+  \label{fig:text_endpoint}
+\end{figure}
 
 At a high level the implementation is as follows: A user browses to
 the Stylometry Service via a web browser. This causes the Play
 Framework web application to serve up a web page with an Etherpad
 control and instructions for the user to enter in the document they
-wish to anonymize. The etherpad control is implemented as an iframe
+wish to anonymize. The Etherpad control is implemented as an iframe
 which serves an Etherpad that is connected to the node.js server
 running the Etherpad backend (both servers should reside on the same
 domain, running on different ports). The page served by Play also
@@ -467,34 +593,49 @@ that the request is made to Anonymouth asynchronously allows a user to
 continue editing the text while an analysis is running, allowing for a
 smooth user experience.
 
-The web service as implemented currently supports only 1 author as the
-assumption is made that the author has pre-configured the "doc set"
-(also referred to as 'problem set' in Anonymouth source) that provides
+Figure \ref{fig:impl} shows the current implemented service in a
+layered architecture.  There are currently two endpoints that run in
+the Play Framework: a pure stylometric endpoint and the adversarial
+endpoint.  The adversarial endpoint is Anonymouth and also contains
+Etherpad, the collaborative editor.  Currently, the endpoints are both
+meant to run on the same server.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.2\textwidth]{img/impl.pdf}
+  \caption{Current implementation of JSANaaS as a layered drawing}
+  \label{fig:impl}
+\end{figure}
+
+The web service as implemented currently supports only one author as the
+assumption is made that the author has pre-configured the document set
+(also referred to as \emph{problem set} in Anonymouth source code) that provides
 references as to the author's own writing style, as well as writing
 samples for other authors that will be used as a reference for writing
 styles that are different than that of the active author. The user can
-additionally configure the anonymouth properties file
-(\texttt{anonymouthprop.prop}) in the jsan resources directory to influence
+additionally configure the Anonymouth properties file
+(\texttt{anonymouthprop.prop}) in the JSAN resources directory to influence
 settings such as the feature set to use for stylometric identification
 as well as the number of threads to use and maximum number of features
 to analyze.
 
 One configured, the call to the \texttt{getAnonymouthInfoJSON} input
-will overwrite the "test.txt" file on disk that is configured in the
-provided problem set. This will ensure that changing the document in
-Etherpad forces an update to the test file and thus ensuring that the
-'latest' document is always anonymized. Once the problem set has been
-updated, the 'Anonymouth library' is invoked. The 'Anonymouth library'
-is a forked version of the current Anonymouth application, which is
-designed to be used behind a Swing/AWT rich client GUI. A number of
-implementation challenges were present when trying to separate the
-core anonymization logic of Anonymouth from its GUI implementation -
-most specifically, although an 'engine' namespace exists which holds
-much of the anonymization logic, significant dependencies still
-existed between the 'engine' and the 'GUI' namespaces, specifically in
-the event handlers associated with the Editor screen and the
-\texttt{GUIMain} classes. Much of the work in this project consisted
-of reducing the coupling between these two namespaces.
+will overwrite the \texttt{test.txt} file on disk that is configured
+in the provided problem set. This will ensure that changing the
+document in Etherpad forces an update to the test file and thus
+ensuring that the 'latest' document is always anonymized. Once the
+problem set has been updated, the Anonymouth library is invoked. The
+Anonymouth library is a forked version of the current Anonymouth
+application, which is designed to be used behind a Swing/AWT rich
+client GUI. A number of implementation challenges were present when
+trying to separate the core anonymization logic of Anonymouth from its
+GUI implementation - most specifically, although an engine namespace
+exists which holds much of the anonymization logic, significant
+dependencies still existed between the engine and the GUI
+namespaces, specifically in the event handlers associated with the
+Editor screen and the \texttt{GUIMain} classes. Much of the work in
+this project consisted of reducing the coupling between these two
+namespaces.
 
 As much of the configuration logic was handled at the GUI layer (via
 \texttt{ThePresident} and \texttt{GUIMain} classes) we took the
@@ -502,14 +643,14 @@ approach of refactoring the GUI layer to work in a 'headless' mode,
 that is, without any windows launching. Long-term it would be
 preferable to have no dependencies on the GUI namespace at all for the
 Stylometry Service, however this could not be achieved in the
-available timeframe for this project. The web service thus invokes a
+available time frame for this project. The web service thus invokes a
 modified version of the \texttt{ThePresident} class, which coordinates
 reading configuration files, loading the configured problem set, and
 using numerous libraries (JGAAP and Weka among them) to conduct an
 adversarial stylometric analysis. The results are returned by the web
 service in the form of a JSON-encoded list of words to remove, as well
 as an indication of 'changes needed' to the current text to reach an
-acceptable level of anonynmity.
+acceptable level of anonymity.
 
 While this analysis has been running, the UI has been waiting on a
 response to the request made of the Stylometric Service. Once this
@@ -532,41 +673,7 @@ directory of the Play Framework Web Application, start a Play
 Framework Server on port $9000$, and start an Etherpad Lite server on
 port $9001$ over node.js.
 
-\section{Comparison to Stand-alone Application}
-
-The stand-alone application has both advantages and disadvantages
-relative to the web service. To start with advantages: it contains
-more robust error handling, offers a GUI to create a problem set, and
-provides a richer editing experience for anonymized
-texts. Disadvantages concern ease of use (users must download and
-execute a JAR file) and supported platforms (it is unlikely that this
-JAR file will be supported on many mobile phones, for instance). The
-Stylometry Service, in contrast, is potentially more accessible than
-the standalone application: it can be accessed via mobile phones and
-tablets, for instance. Likewise application delivery may be simpler -
-nothing must be downloaded locally. Furthermore, the web application
-maintains a 'timeline' of changes made to a text and also allows for
-simple multi-party anonymization of documents.
-
-Disadvantages to the web application include the fact that it offers
-fewer anonymization features (for instance, highlighting of specific
-text passages), instead focusing primarily on 'words to
-remove'. Furthermore, its security footprint is less well known, as it
-introduces a number of new dependencies / potential attack vectors
-such as JQuery, Twitter Bootstrap, Etherpad Lite, node.js, etc.
-
-For a user likely to be using mobile devices or a casual user looking
-to quickly anonymize texts, we suggest that the web interface may be a
-better option. For a user facing a highly sophisticated adversary and
-needing detailed anonymization suggestions, we suggest that the
-stand-alone application may be a better option. We note that there is
-no technical reason that could keep the web application from offering
-all of the same anonymization suggestions as the standalone
-application, and thus is may be the case that in the future the web
-application could be recommendable to a wider range of users.
-standalone client
-
-\section{Deployment}
+\subsection{Deployment}
 
 The web application can be deployed on a Ubuntu 12.04 desktop
 installation per Listings \ref{lst:install} and \ref{lst:start}.
@@ -585,7 +692,51 @@ cd anonymouth
 ./bootstrap.sh
 \end{lstlisting}
 
-\section{Single User Evaluation}
+
+\subsection{Comparison to Stand-alone Application}
+
+The stand-alone application has both advantages and disadvantages
+relative to the web service. To start with advantages: it contains
+more robust error handling, offers a GUI to create a problem set, and
+provides a richer editing experience for anonymized
+texts. Disadvantages concern ease of use (users must download and
+execute a JAR file) and supported platforms (it is unlikely that this
+JAR file will be supported on many mobile phones, for instance). The
+Stylometry Service, shown in Figure \ref{fig:text_endpoint}, in
+contrast, is potentially more accessible than the standalone
+application: it can be accessed via mobile phones and tablets, for
+instance. Likewise application delivery may be simpler - nothing must
+be downloaded locally. Furthermore, the web application maintains a
+time line of changes made to a text and also allows for simple
+multi-party anonymization of documents.
+
+Disadvantages to the web application include the fact that it offers
+fewer anonymization features (for instance, highlighting of specific
+text passages), instead focusing primarily on ``words to
+remove''. Furthermore, its security footprint is less well known, as it
+introduces a number of new dependencies / potential attack vectors
+such as JQuery, Twitter Bootstrap, Etherpad Lite, node.js, etc.
+
+For a user likely to be using mobile devices or a casual user looking
+to quickly anonymize texts, we suggest that the web interface may be a
+better option. For a user facing a highly sophisticated adversary and
+needing detailed anonymization suggestions, we suggest that the
+stand-alone application may be a better option. We note that there is
+no technical reason that could keep the web application from offering
+all of the same anonymization suggestions as the standalone
+application, and thus is may be the case that in the future the web
+application could be recommendable to a wider range of users.
+standalone client
+
+\section{Evaluation}\label{sec:evaluation}
+
+We conducted two evaluations of the service.  The first was a
+single-user evaluation that focused on the stylometric capabilities.
+The second was a multi-user evaluation.  In this evaluation, the focus
+was on the experience and usability of a multi-user stylometric
+interaction.
+
+\subsection{Single User Evaluation}
 
 Although time didn't permit detailed user testing of the web
 application, the authors did conduct one experiment with two users
@@ -614,13 +765,88 @@ from achieving statistical significance, they do suggest that it may
 be possible to use this software to achieve anonymization levels which
 surpass those of a 'naive' anonymization attempt.
 
-\section{Multiple Concurrent User Evaluation}
+\subsection{Multiple Concurrent User Evaluation}
 
-TODO
+A simple multi-user evaluation was conducted.  The noticeable feature
+in the multi-user scenario was the real-time collaboration.  An example
+screen shot in Figure \ref{fig:multi}.  When an experienced user
+interacted with a novice user, the learning curve of the novice user
+was drastically reduced.  The multi-user platform also allows users to
+divide and conquer the work, which allowed for quicker anonymization
+of the document.
 
-\section{Evaluation of Architecture Qualities}
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\textwidth]{img/mult_user.png}
+  \caption{Multi-user screenshot}
+  \label{fig:multi}
+\end{figure}
 
-\subsection{Performance.}
+In this multi-user test, both authors were human.  However, we would
+like to see the multi-user as an Artificial Intelligence (AI) Agent.
+The agent, acting as a author, could help the primary author anonymize
+the target document.  We believe that this application is well-suited
+for an AI because of a clear objective function: the changes-needed
+score.  A naive approach could simply apply adversarial search with
+pruning, like Mini-max to analyze the document and replace each
+suggested word with a thesaurus lookup.
+
+A more thorough approach is to incorporate a Drama Manager agent as
+found in video games \cite{10.1109/WI-IAT.2009.143},
+\cite{conf/aaaiss/SullivanCM09}, \cite{Magerko04aicharacters}.  In
+these games, a Drama Manager (DM) acts as a benevolent AI to manage the
+player's experience.  The DM monitors various features of the game and
+can change elements in game.  If the game is too challenging, the DM
+can scale the difficulty by offering additional power-ups, or if it is
+too easy, the DM will introduce more adversaries.
+
+The application to this service is that the AI can monitor the user's
+interaction on the site.  If the user is slow to start using the
+software, the agent can offer helpful tips.  However, an experienced
+user will immediately start using the service and would not need these
+tips.  Similarly, if the user is not replacing words in a direction
+that improves the document, the agent, acting as a second author, can
+offer assistance.
+
+
+\subsection{Evaluation of Architecture Qualities}
+
+In the following sections, we analyze each architecture against the
+design criteria in Section \ref{sec:design}.  We evaluate our
+implementation as of the time of this writing and identify areas that
+need further work.
+
+\subsubsection{Availability.}
+
+As implemented the service runs on one host and none of the redundancy
+or resiliency features have been added.  This may be acceptable for a
+prototype, but for the service to act as a research platform, more
+work must be done to ensure that it is reliable.  We did not perform
+any hardening or enhance the protection of the web service through the
+operating system in any way.  Each of those efforts would certainly
+help maintain the availability goal.
+
+\subsubsection{Interoperability}
+
+We have tested the current software with popular web browsers and each
+of them have been able to interact with the site.  The heavy lifting
+of this interoperability is the Play Framework, which allows for rapid
+development of a RESTful web service.  Even though the client software
+need only a browser, there is great variety in browsers.  Again,
+restricting the browser to the Tor Browser Bundle would significantly
+help otherwise various browsers could have unique interoperability issues.
+
+\subsubsection{Modifiability}
+
+We did not implement the registration service, therefore the service
+is not as modifiable as we would like.  The main purpose of this
+effort was to evaluate the feasibility and during the development we
+could rapidly push changes to the server.  The Play Framework assists
+greatly in this effort, but inherently, web service development can
+lead to quicker deployments than traditional applications.
+
+
+\subsubsection{Performance.}
 
 The performance of the Stylometry Service as implemented is largely
 determined by that of the Anonymouth service that it uses to get
@@ -628,14 +854,14 @@ stylometry suggestions. For an analysis of 1 500-word test document vs
 23 documents from 4 'other' authors and using 8 training documents
 from the to-anonymize author, we recorded a total of 67 seconds
 required for the Anonymouth analysis, with less than 1 additional
-second used to update the client UI, on a 3.3 Ghz Core i5 Ubuntu 12.04
+second used to update the client UI, on a 3.3 GHz Core i5 Ubuntu 12.04
 Desktop machine, using 1 calculation thread for Anonymouth. These
 results suggests that any attempts at performance optimization should
 center around optimizing the performance of the Anonymouth
 configuration.
 
 After each stylometric analysis is complete, the web service ensures
-all relevant anonymouth resources are closed. This allows the web
+all relevant Anonymouth resources are closed. This allows the web
 service to be used over a long period of time (20 or more
 anonymization attempts have been tested) without memory leaks noted.
 
@@ -645,7 +871,7 @@ web service based load test framework, such as Apache's JMeter or
 LoadUI, in order to fully test the service under various potential
 user loads.
 
-\subsection{Testability.}
+\subsubsection{Testability.}
 
 The web service UI is amenable to automated testing via web testing
 frameworks such as Selenium (although such tests were not written for
@@ -656,6 +882,21 @@ service layer to be a positive from the standpoint of testability, as
 it allows users who may wish to modify the service the ability to
 expand an existing unit test suite.
 
+\subsubsection{Security and Privacy}
+
+Security and Privacy findings were analyzed in Sections
+\ref{sec:security} and \ref{sec:privacy}.
+
+\subsubsection{Usability}
+
+We feel that the interaction with the interface is improved as web
+service.  The web service provides a very common experience for the
+user through her browser with limited options.  The software is a
+prototype and overall, the interface is intuitive and similar to other
+web applications.  The addition of the Etherpad enables a very easy
+collaborative editing platform and the suggested words and very
+clearly identified.
+
 \section{Conclusion}
 
 There are two significant contributions as a result of this work.  The
@@ -663,9 +904,18 @@ first is a stylometric web service.  This advances the usability
 and capabilities of JSAN and provide a framework for more expansive
 user testing in the future. The user testing results suggest that a
 web interface may offer usability advantages while still providing a
-meaningful increase in author anonymity.  The second contribution is that this is
-the first framework for multi-author adversarial stylometry.  Our
-results here suggest TODO.
+meaningful increase in author anonymity.
+
+
+The second contribution is that this is the first framework for
+multi-author adversarial stylometry.  Our results here suggest
+multi-author collaboration and improve the usability of the software
+through real-time mentoring.  Also, the addition of an AI agent could
+replace the human mentor and provide a more consistent experience.
+
+While the software is a prototype, we believe that a stylometric web
+service is feasible.  There are challenges to overcome, such as the
+trusted service provider, but we feel that these are solvable.
 
 \section*{Related Work}\label{sec:related}
 This proposal extends the work from Drexel's PSAL, who have made
@@ -687,43 +937,40 @@ services \cite{oakland2013-trawling}.  We will provide a discussion on
 the design and experience of enabling a hidden service, but we will
 focus on this aspect.
 
-\begin{table}
-  \centering
-  \begin{tabular}{l | c}
-    Milestone & Date\\
-    \hline
-
-    Document initial design & October 28\\
-    Finish porting JSAN to a web service & November 4\\
-    Add the Firebase editro & November 11\\
-    Add the third party feature & November 18\\
-    Conduct evaluation & November 25\\
-    Provide Paper and Presentation & December 2
-
-  \end{tabular}
-  \caption{Project Milestones}
-  \label{tab:milestones}
-\end{table}
-
-
 \subsection*{Future Work}
 
-The scope of this project is designed to completed in one Drexel
-quarter, however we have several ideas for continued work.  With a web
-service, we can offer real-time adversarial stylometry.  Assume Alice,
-who has a blog, wants to anonymize her next blog post.  She would
-connect to our web service, submit the URL for her blog and then write
-her next post with adversarial stylometry.  This real-time data
-crawling at this scale is simply not feasible with stand alone
-software.
+With a web service, we can offer real-time adversarial stylometry.
+Assume Alice, who has a blog, wants to anonymize her next blog post.
+She would connect to our web service, submit the URL for her blog and
+then write her next post with adversarial stylometry.  This real-time
+data crawling at this scale is simply not feasible with stand alone
+software.  Currently the corpus must be selected before deployment of
+the service, but building a corpus on the fly would be interesting.
+However, there are challenges since the  data is especially raw.
+For example, the author may have signed her name to the blog post or
+left in other details that could threaten her anonymity.
 
-Now that a third party will be re-writing documents, we feel that it
+A third party could re-write the document entirely.  In this case, it
 is important to obfuscate the content from the re-writer.  One idea,
 is to mix the document, perhaps with other documents, prior to
 re-writing.  The re-writer would be presented with an otherwise
 nonsensical document and would focus on re-write each sentence in her
 native style.  The combined document, would contain $n$ author styles,
-where $n$ is the number of re-writing authors.
+where $n$ is the number of re-writing authors.  The concern lies with
+storing the document and making it available to re-writers.  We
+eliminated this complication by focusing on real-time anonymization in
+a low-latency environment.  The third party re-writer could also be
+achieved by an AI agent, which could eliminate this issue.
+
+
+Additional testing should be conducted on mobile devices.  The tests
+on these devices would mainly be usability studies to ensure that the
+service can be effectively used on computationally limited devices.
+The ideal platform would be an Android based tablet or smart phone,
+since there are Tor clients that can be easily installed on these
+devices.  The extra challenge here is uploading documents and entering
+text as the lack of keyboard may make this a bit more complicated.
+However, these are implementation details that can be overcome.
 
 Lastly, for long term adversarial projects, we are curious on how often
 one has to re-train the model.  We imagine that a web service could
